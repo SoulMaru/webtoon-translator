@@ -1,8 +1,6 @@
 {
-  "rewrites": [
-    {
-      "source": "/",
-      "destination": "/atelier/index.html"
-    }
+  "routes": [
+    { "src": "^/$", "dest": "/atelier2/index.html" },
+    { "handle": "filesystem" }
   ]
 }
