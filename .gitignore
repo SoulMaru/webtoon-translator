@@ -45,3 +45,12 @@ next-env.d.ts
 *.traineddata
 
 .vercel
+
+# 새김AI Atelier — 작품 원본과 DB는 내 PC에만 둔다
+/local-api/data/*
+!/local-api/data/.gitkeep
+/local-api/media/*
+!/local-api/media/.gitkeep
+
+# Cloudflare Tunnel 자격증명
+/tunnel/*.json
