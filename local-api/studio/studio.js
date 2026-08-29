@@ -6,6 +6,7 @@ const state = {
   images: [],
   picked: 0,
   busy: false,
+  warmed: false,
   lastRequest: null,
 };
 
@@ -41,6 +42,12 @@ async function loadState() {
         ? ` · ${(s.comfy.vramTotal / 1073741824).toFixed(1)}GB`
         : '';
       $('engine-note').textContent = (s.comfy.device ?? 'ComfyUI').replace(/ :.*$/, '') + gb;
+      if (!state.warmed) {
+        $('board-empty').innerHTML =
+          '왼쪽에 장면을 적고 <b>만들기</b>를 누르면<br />여기에 결과가 걸립니다.' +
+          '<br /><br /><span style="font-size:12px">엔진을 막 켠 뒤 <b>첫 장</b>은 모델을 읽느라' +
+          '<br />몇 분 더 걸립니다. 두 번째부터 빨라집니다.</span>';
+      }
     } else {
       engine.className = 'status down';
       $('engine-title').textContent = '엔진이 꺼져 있습니다';
@@ -115,12 +122,30 @@ const SIZES_15 = {
   '16:9': [896, 512],
 };
 
+// 이 컴퓨터에서 실제로 재 본 값에 맞춘 어림수입니다.
+//   SD1.5  512x512 · 12단계 → 약 10초
+//   SDXL  1024x1024 · 20단계 → 약 106초
+// 대체로 (칸 수 × 픽셀 수)에 비례합니다.
+function estimateSeconds(w, h, steps, batch) {
+  const perStep = ((w * h) / 262144) * 0.8;
+  return Math.round((perStep * steps + 3) * batch);
+}
+
+function prettySeconds(s) {
+  if (s < 60) return `약 ${s}초`;
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return r < 10 ? `약 ${m}분` : `약 ${m}분 ${r}초`;
+}
+
 function updateSizeHint() {
   const model = $('model').value ?? '';
   const table = /v1-5|sd15/i.test(model) ? SIZES_15 : SIZES;
   const [w, h] = table[state.ratio] ?? [0, 0];
   const n = Number($('batch').value);
-  $('size-hint').textContent = `${w} × ${h}${n > 1 ? ` · ${n}장` : ''}`;
+  const secs = estimateSeconds(w, h, Number($('steps').value), n);
+  $('size-hint').textContent =
+    `${w} × ${h}${n > 1 ? ` · ${n}장` : ''} · ${prettySeconds(secs)}`;
 }
 
 // ── 만들기 ─────────────────────────────────────────
@@ -198,6 +223,7 @@ async function waitFor(promptId, started) {
     if (!state.images.length) throw new Error('결과 이미지가 없습니다.');
 
     const secs = Math.round((Date.now() - started) / 1000);
+    state.warmed = true; // 한 번 만들었으면 모델이 올라와 있다
     setBoardState(`${state.images.length}장 완성 · ${secs}초`);
     renderResults();
     return;
@@ -306,7 +332,7 @@ for (const [id, out] of [
 ]) {
   $(id).addEventListener('input', () => {
     $(out).textContent = $(id).value;
-    if (id === 'batch') updateSizeHint();
+    updateSizeHint();
   });
 }
 
