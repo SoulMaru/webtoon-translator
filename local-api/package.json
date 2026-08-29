@@ -1,0 +1,15 @@
+{
+  "name": "atelier-local-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "새김AI Atelier 로컬 API — 내 PC가 DB와 이미지 저장소 노릇을 합니다. 외부 의존성 없음.",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.mjs",
+    "ingest": "node --env-file-if-exists=.env ingest.mjs",
+    "admin": "node --env-file-if-exists=.env admin.mjs"
+  }
+}

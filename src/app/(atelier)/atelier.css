@@ -1,0 +1,269 @@
+/* 새김AI Atelier — 종이와 먹의 느낌. 한글 폰트는 내려받지 않고 기기 것을 씁니다. */
+
+:root {
+  --paper: #faf8f5;
+  --paper-sunk: #f2eee8;
+  --ink: #1c1917;
+  --ink-soft: #57534e;
+  --ink-faint: #a8a29e;
+  --rule: #e3ddd4;
+  --seal: #a8462f;
+
+  --sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic',
+    'Apple SD Gothic Neo', system-ui, sans-serif;
+  --serif: 'Nanum Myeongjo', 'Batang', '바탕', 'Apple SD Gothic Neo', Georgia, serif;
+
+  --page: 1180px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #14120f;
+    --paper-sunk: #1c1917;
+    --ink: #ece7df;
+    --ink-soft: #a8a29e;
+    --ink-faint: #6b635a;
+    --rule: #2c2723;
+    --seal: #d4674a;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body { padding: 0; margin: 0; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.shell {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── 머리 ───────────────────────────────────────── */
+
+.masthead {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 36px 0 0;
+}
+
+.wordmark {
+  font-family: var(--serif);
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.wordmark-sub {
+  font-size: 12px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.hero {
+  padding: 56px 0 44px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 44px;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(30px, 5vw, 52px);
+  line-height: 1.28;
+  margin: 0 0 14px;
+  font-weight: 700;
+}
+
+.hero p {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--ink-soft);
+  font-size: 17px;
+}
+
+/* ── 작품 격자 ──────────────────────────────────── */
+
+.gallery {
+  columns: 3 300px;
+  column-gap: 24px;
+  padding-bottom: 80px;
+}
+
+.card {
+  break-inside: avoid;
+  margin: 0 0 24px;
+  display: block;
+}
+
+.card-frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+  line-height: 0;
+}
+
+.card-frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 480ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.card:hover .card-frame img { transform: scale(1.025); }
+
+.card-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 2px 0;
+}
+
+.card-title {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.card-meta {
+  font-size: 12px;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── 작품 하나 ──────────────────────────────────── */
+
+.back {
+  display: inline-block;
+  padding: 28px 0 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.back:hover { color: var(--seal); }
+
+.work {
+  padding: 24px 0 90px;
+  display: grid;
+  gap: 40px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 900px) {
+  .work { grid-template-columns: minmax(0, 1fr) 280px; align-items: start; }
+}
+
+.work-frame {
+  background: var(--paper-sunk);
+  border: 1px solid var(--rule);
+  line-height: 0;
+}
+
+.work-frame img { width: 100%; height: auto; display: block; }
+
+.work-info h1 {
+  font-family: var(--serif);
+  font-size: 28px;
+  margin: 0 0 12px;
+  line-height: 1.35;
+}
+
+.work-info p { margin: 0 0 24px; color: var(--ink-soft); }
+
+.spec { border-top: 1px solid var(--rule); margin: 0; padding-top: 16px; font-size: 14px; }
+.spec div { display: flex; justify-content: space-between; gap: 16px; padding: 5px 0; }
+.spec dt { color: var(--ink-faint); }
+.spec dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+
+.tag {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--rule);
+  padding: 3px 10px;
+  color: var(--ink-soft);
+}
+
+/* ── 문 닫음 안내 ───────────────────────────────── */
+
+.closed {
+  min-height: 74vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px;
+  padding: 60px 0 100px;
+}
+
+.seal {
+  width: 68px;
+  height: 68px;
+  border: 2px solid var(--seal);
+  color: var(--seal);
+  font-family: var(--serif);
+  font-size: 27px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.closed h1 {
+  font-family: var(--serif);
+  font-size: clamp(24px, 4vw, 34px);
+  margin: 0;
+  font-weight: 700;
+}
+
+.closed p {
+  margin: 0;
+  max-width: 34ch;
+  color: var(--ink-soft);
+}
+
+.closed .note {
+  font-size: 13px;
+  color: var(--ink-faint);
+  border-top: 1px solid var(--rule);
+  padding-top: 18px;
+  margin-top: 6px;
+}
+
+/* ── 빈 목록 ────────────────────────────────────── */
+
+.empty {
+  padding: 90px 0 120px;
+  text-align: center;
+  color: var(--ink-faint);
+}
+
+/* ── 꼬리 ───────────────────────────────────────── */
+
+.colophon {
+  border-top: 1px solid var(--rule);
+  padding: 22px 0 40px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--ink-faint);
+}
