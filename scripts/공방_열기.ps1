@@ -21,6 +21,23 @@ if (Test-LocalApi) {
     )
 }
 
+function Test-Studio {
+    try {
+        Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8788/api/state' -TimeoutSec 3 | Out-Null
+        return $true
+    } catch { return $false }
+}
+
+if (Test-Studio) {
+    Write-Host "만들기 콘솔은 이미 떠 있습니다." -ForegroundColor DarkGray
+} else {
+    Write-Host "만들기 콘솔을 켭니다..." -ForegroundColor Cyan
+    Start-Process powershell.exe -WindowStyle Minimized -ArgumentList @(
+        '-NoProfile', '-ExecutionPolicy', 'Bypass', '-NoExit',
+        '-File', (Join-Path $here 'start-studio.ps1')
+    )
+}
+
 if (Get-Process cloudflared -ErrorAction SilentlyContinue) {
     Write-Host "터널은 이미 떠 있습니다." -ForegroundColor DarkGray
 } else {

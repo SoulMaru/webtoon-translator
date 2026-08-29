@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>만들기 · 새김AI Atelier</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Gowun+Batang:wght@400;700&display=swap"
+    />
+    <link rel="stylesheet" href="/assets/studio.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="rail">
+        <div class="brand">
+          <span class="brand-mark">새</span>
+          <span>
+            <span class="brand-name">Atelier</span>
+            <span class="brand-sub">새김AI · 만들기 콘솔</span>
+          </span>
+        </div>
+
+        <div class="status" id="engine">
+          <span class="status-dot"></span>
+          <span>
+            <span class="status-title" id="engine-title">엔진 확인 중</span>
+            <span class="status-note" id="engine-note">잠시만요</span>
+          </span>
+        </div>
+
+        <div>
+          <div class="rail-label">작업실</div>
+          <nav class="rail-group">
+            <span class="rail-item is-on">만들기</span>
+            <a class="rail-item" href="https://saegimai.com" target="_blank" rel="noreferrer">
+              공개 갤러리
+              <span class="count" id="gallery-count">–</span>
+            </a>
+          </nav>
+        </div>
+
+        <hr class="rail-rule" />
+
+        <div class="rail-foot">
+          이 화면은 나만 볼 수 있습니다.<br />
+          만든 그림은 <b>걸기</b>를 눌러야<br />
+          공개 갤러리에 올라갑니다.
+        </div>
+      </aside>
+
+      <main class="stage">
+        <div class="crumbs">
+          <span>작업실</span><span>/</span><span class="here">만들기</span>
+          <span class="crumbs-right" id="queue-note"></span>
+        </div>
+
+        <div class="stage-inner">
+          <section class="hero">
+            <div>
+              <div class="eyebrow">창작 작업실</div>
+              <h1>장면을 한 문장으로<br /><span class="tint">시작해보세요.</span></h1>
+              <p>복잡한 설정은 뒤에 두고, 먼저 만들고 싶은 장면에 집중하세요.</p>
+            </div>
+            <aside class="note">
+              <div class="note-num">01</div>
+              <div class="note-body">
+                <strong>그림은 이 컴퓨터에서 만들어집니다.</strong>
+                바깥으로 나가는 것은 없습니다.
+              </div>
+            </aside>
+          </section>
+
+          <div class="panes">
+            <!-- A. 새 이미지 -->
+            <section class="pane">
+              <div class="pane-head">
+                <span class="pane-tag">A</span>
+                <h2>새 이미지</h2>
+              </div>
+
+              <form id="make" class="pane-body">
+                <label class="field">
+                  <span class="field-label">무엇을 만들까요? <b class="req">필수</b></span>
+                  <textarea
+                    id="prompt"
+                    rows="4"
+                    placeholder="테라코타 안뜰에서 코발트색 코트를 입은 인물, 따뜻한 감귤빛 햇살"
+                    required
+                  ></textarea>
+                  <span class="field-hint">✳ 장면·분위기·빛을 말하듯 적어 보세요.</span>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">빼고 싶은 요소</span>
+                  <textarea
+                    id="negative"
+                    rows="2"
+                    placeholder="원하지 않는 요소가 있다면 적어 보세요 (선택)"
+                  ></textarea>
+                </label>
+
+                <div class="field-row">
+                  <label class="field">
+                    <span class="field-label">그림 느낌</span>
+                    <select id="model"></select>
+                  </label>
+
+                  <div class="field">
+                    <span class="field-label">이미지 비율</span>
+                    <div class="pills" id="ratios"></div>
+                  </div>
+                </div>
+
+                <div class="tune-head">
+                  <span class="field-label">빠른 설정</span>
+                  <button type="button" class="link" id="toggle-tune">더 세밀하게</button>
+                </div>
+
+                <div class="tune" id="tune" hidden>
+                  <label class="slider">
+                    <span>디테일<b id="steps-v">24</b></span>
+                    <input type="range" id="steps" min="8" max="50" value="24" />
+                  </label>
+                  <label class="slider">
+                    <span>문장 반영<b id="cfg-v">7</b></span>
+                    <input type="range" id="cfg" min="1" max="14" step="0.5" value="7" />
+                  </label>
+                  <label class="slider">
+                    <span>한 번에 몇 장<b id="batch-v">1</b></span>
+                    <input type="range" id="batch" min="1" max="4" value="1" />
+                  </label>
+                  <label class="seed">
+                    <span>랜덤값</span>
+                    <input type="number" id="seed" placeholder="자동" min="0" />
+                  </label>
+                </div>
+
+                <div class="make-foot">
+                  <span class="hint" id="size-hint"></span>
+                  <button type="submit" class="primary" id="go">만들기</button>
+                </div>
+              </form>
+            </section>
+
+            <!-- B. 결과 보드 -->
+            <section class="pane">
+              <div class="pane-head">
+                <span class="pane-tag">B</span>
+                <h2>결과 보드</h2>
+                <span class="pane-state" id="board-state">준비됨</span>
+              </div>
+
+              <div class="pane-body">
+                <div class="board" id="board">
+                  <div class="board-empty" id="board-empty">
+                    왼쪽에 장면을 적고 <b>만들기</b>를 누르면<br />여기에 결과가 걸립니다.
+                  </div>
+                  <figure class="board-shot" id="shot" hidden>
+                    <img id="shot-img" alt="만든 결과" />
+                  </figure>
+                  <div class="bar" id="bar" hidden><span id="bar-fill"></span></div>
+                </div>
+
+                <div class="thumbs" id="thumbs"></div>
+
+                <div class="publish" id="publish" hidden>
+                  <label class="field">
+                    <span class="field-label">작품 이름</span>
+                    <input id="p-title" type="text" placeholder="예: 감귤빛 안뜰" />
+                  </label>
+                  <label class="field">
+                    <span class="field-label">한 줄 설명</span>
+                    <input id="p-desc" type="text" placeholder="예: 코발트 코트, 테라코타 안뜰" />
+                  </label>
+                  <label class="field">
+                    <span class="field-label">태그 (쉼표로 구분)</span>
+                    <input id="p-tags" type="text" placeholder="예: 인물, 따뜻함" />
+                  </label>
+                  <label class="check">
+                    <input type="checkbox" id="p-now" checked />
+                    <span>바로 공개 갤러리에 걸기</span>
+                  </label>
+                  <div class="publish-foot">
+                    <button type="button" class="ghost" id="again">다시 만들기</button>
+                    <button type="button" class="primary" id="save">갤러리에 걸기</button>
+                  </div>
+                </div>
+
+                <p class="err" id="err" hidden></p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/assets/studio.js"></script>
+  </body>
+</html>
