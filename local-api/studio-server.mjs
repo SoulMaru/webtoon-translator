@@ -3,13 +3,13 @@
 // 이 서버는 공개 갤러리 API(8787)와 **다른 포트**에서 돕니다.
 // api.saegimai.com 터널은 8787 만 보게 되어 있으므로,
 // 공개 주소로는 이 콘솔에 어떤 경로로도 닿을 수 없습니다.
-// 바깥에서는 studio.saegimai.com 으로만 들어오며 Cloudflare Access 가 막습니다.
+// 바깥에서는 studio.saegimai.com 으로만 들어오며 이 서버의 HTTP 인증이 막습니다.
 
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join, extname, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { openDb, paths } from './db.mjs';
 import { imageSize } from './imagesize.mjs';
 import * as comfy from './comfy.mjs';
@@ -19,6 +19,13 @@ const UI = join(here, 'studio');
 
 const PORT = Number(process.env.ATELIER_STUDIO_PORT ?? 8788);
 const HOST = process.env.ATELIER_STUDIO_HOST ?? '127.0.0.1';
+const AUTH_USER = process.env.ATELIER_STUDIO_USER ?? '';
+const AUTH_PASSWORD = process.env.ATELIER_STUDIO_PASSWORD ?? '';
+
+if (!AUTH_USER || !AUTH_PASSWORD) {
+  console.error('ATELIER_STUDIO_USER 와 ATELIER_STUDIO_PASSWORD 를 .env 에 설정해야 합니다.');
+  process.exit(1);
+}
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -48,6 +55,40 @@ async function readBody(req, limit = 64 * 1024) {
   }
   if (!chunks.length) return {};
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+}
+
+function sameSecret(actual, expected) {
+  const a = Buffer.from(actual);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
+function isAuthorized(req) {
+  const header = req.headers.authorization ?? '';
+  if (!header.startsWith('Basic ')) return false;
+  try {
+    const decoded = Buffer.from(header.slice(6), 'base64').toString('utf8');
+    const split = decoded.indexOf(':');
+    if (split < 0) return false;
+    return (
+      sameSecret(decoded.slice(0, split), AUTH_USER) &&
+      sameSecret(decoded.slice(split + 1), AUTH_PASSWORD)
+    );
+  } catch {
+    return false;
+  }
+}
+
+function requireAuth(req, res) {
+  if (isAuthorized(req)) return true;
+  res.writeHead(401, {
+    'WWW-Authenticate': 'Basic realm="SaegimAI Studio", charset="UTF-8"',
+    'Content-Type': 'text/plain; charset=utf-8',
+    'Cache-Control': 'no-store',
+    'X-Content-Type-Options': 'nosniff',
+  });
+  res.end('로그인이 필요합니다.');
+  return false;
 }
 
 // ── 갤러리에 걸기 ───────────────────────────────────
@@ -121,6 +162,8 @@ const server = createServer(async (req, res) => {
   const path = url.pathname.replace(/\/+$/, '') || '/';
 
   try {
+    if (!requireAuth(req, res)) return;
+
     // 화면
     if (req.method === 'GET' && (path === '/' || path === '/index.html')) {
       const html = readFileSync(join(UI, 'index.html'));

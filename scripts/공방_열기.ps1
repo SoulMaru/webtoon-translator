@@ -25,7 +25,9 @@ function Test-Studio {
     try {
         Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8788/api/state' -TimeoutSec 3 | Out-Null
         return $true
-    } catch { return $false }
+    } catch {
+        return $_.Exception.Response.StatusCode.value__ -eq 401
+    }
 }
 
 if (Test-Studio) {
