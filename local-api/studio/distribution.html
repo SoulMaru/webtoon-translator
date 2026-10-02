@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>배포 · 새김AI Atelier</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Gowun+Batang:wght@400;700&display=swap"
+    />
+    <link rel="stylesheet" href="/assets/studio.css" />
+    <link rel="stylesheet" href="/assets/distribution.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="rail">
+        <div class="brand">
+          <span class="brand-mark">새</span>
+          <span>
+            <span class="brand-name">Atelier</span>
+            <span class="brand-sub">새김AI · 배포 오케스트레이터</span>
+          </span>
+        </div>
+
+        <div class="status" id="engine">
+          <span class="status-dot"></span>
+          <span>
+            <span class="status-title" id="engine-title">확인 중</span>
+            <span class="status-note" id="engine-note">잠시만요</span>
+          </span>
+        </div>
+
+        <div>
+          <div class="rail-label">작업실</div>
+          <nav class="rail-group">
+            <a class="rail-item" href="/">만들기</a>
+            <span class="rail-item is-on">배포</span>
+            <a class="rail-item" href="https://saegimai.com" target="_blank" rel="noreferrer">공개 갤러리</a>
+          </nav>
+        </div>
+
+        <div>
+          <div class="rail-label">작품</div>
+          <nav class="rail-group" id="series-list"></nav>
+          <button type="button" class="link rail-new" id="new-series-toggle">+ 새 작품</button>
+        </div>
+
+        <hr class="rail-rule" />
+
+        <div class="rail-foot">
+          예측은 <b>잠그면</b> 고칠 수 없습니다.<br />
+          게시하기 전에 잠그십시오.
+        </div>
+      </aside>
+
+      <main class="stage">
+        <div class="crumbs">
+          <span>작업실</span><span>/</span><span>배포</span><span>/</span>
+          <span class="here" id="crumb-here">작품을 고르십시오</span>
+          <span class="crumbs-right" id="prompt-version"></span>
+        </div>
+
+        <div class="stage-inner">
+          <p class="err" id="err" hidden></p>
+          <p class="ok-note" id="ok" hidden></p>
+
+          <!-- 새 작품 -->
+          <section class="pane" id="new-series" hidden>
+            <div class="pane-head"><span class="pane-tag">+</span><h2>새 작품</h2></div>
+            <form class="pane-body" id="new-series-form">
+              <label class="field">
+                <span class="field-label">작품 제목 <b class="req">필수</b></span>
+                <input id="ns-title" type="text" required />
+              </label>
+              <label class="field">
+                <span class="field-label">한 줄 소개</span>
+                <input id="ns-logline" type="text" />
+              </label>
+              <label class="field">
+                <span class="field-label">이전 작품에서 넘겨받을 교훈</span>
+                <textarea id="ns-carry" rows="5" placeholder="지난 50화 작품에서 확인된 것만 적으십시오. 짐작은 '짐작'이라고 적어 두십시오."></textarea>
+                <span class="field-hint">✳ 이 칸은 모든 회차의 패키지 지시문에 함께 들어갑니다.</span>
+              </label>
+              <div class="make-foot"><span></span><button class="primary" type="submit">작품 만들기</button></div>
+            </form>
+          </section>
+
+          <!-- 작품 화면 -->
+          <div id="series-view" hidden>
+            <section class="hero dist-hero">
+              <div>
+                <div class="eyebrow" id="sv-eyebrow">작품</div>
+                <h1 id="sv-title"></h1>
+                <p id="sv-logline"></p>
+              </div>
+              <aside class="note">
+                <div class="note-num" id="sv-count">0</div>
+                <div class="note-body" id="sv-numbering"></div>
+              </aside>
+            </section>
+
+            <div class="dist-tabs" role="tablist">
+              <button type="button" class="pill on" data-tab="episodes">회차</button>
+              <button type="button" class="pill" data-tab="baselines">기준 데이터</button>
+              <button type="button" class="pill" data-tab="learning">학습기록</button>
+              <button type="button" class="pill" data-tab="series-settings">작품 설정</button>
+            </div>
+
+            <!-- 회차 -->
+            <section data-panel="episodes">
+              <div class="ep-strip" id="ep-strip"></div>
+              <div id="episode"></div>
+            </section>
+
+            <!-- 기준 데이터 -->
+            <section data-panel="baselines" hidden>
+              <section class="pane">
+                <div class="pane-head"><span class="pane-tag">B</span><h2>플랫폼별 최근 게시물 실적</h2></div>
+                <div class="pane-body">
+                  <p class="hint" id="baseline-help"></p>
+                  <div class="baseline-grid" id="baseline-grid"></div>
+                </div>
+              </section>
+            </section>
+
+            <!-- 학습기록 -->
+            <section data-panel="learning" hidden>
+              <section class="pane">
+                <div class="pane-head">
+                  <span class="pane-tag">L</span><h2>다음 작품 제작 프롬프트에 붙일 학습기록</h2>
+                  <span class="pane-state" id="learning-state"></span>
+                </div>
+                <div class="pane-body">
+                  <pre class="mono" id="learning-block"></pre>
+                  <div class="make-foot">
+                    <button type="button" class="ghost" id="learning-json">JSON 내려받기</button>
+                    <button type="button" class="primary" id="learning-copy">복사</button>
+                  </div>
+                </div>
+              </section>
+            </section>
+
+            <!-- 작품 설정 -->
+            <section data-panel="series-settings" hidden>
+              <section class="pane">
+                <div class="pane-head"><span class="pane-tag">S</span><h2>작품 설정</h2></div>
+                <form class="pane-body" id="series-form">
+                  <label class="field">
+                    <span class="field-label">한 줄 소개</span>
+                    <input id="ss-logline" type="text" />
+                  </label>
+                  <label class="field">
+                    <span class="field-label">이전 작품에서 넘겨받은 교훈</span>
+                    <textarea id="ss-carry" rows="8"></textarea>
+                  </label>
+                  <div class="make-foot"><span></span><button class="primary" type="submit">저장</button></div>
+                </form>
+              </section>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/assets/distribution.js"></script>
+  </body>
+</html>

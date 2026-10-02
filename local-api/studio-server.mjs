@@ -13,6 +13,7 @@ import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { openDb, paths } from './db.mjs';
 import { imageSize } from './imagesize.mjs';
 import * as comfy from './comfy.mjs';
+import { handleDist } from './distribution/routes.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const UI = join(here, 'studio');
@@ -171,6 +172,14 @@ const server = createServer(async (req, res) => {
       return res.end(html);
     }
 
+    // 배포 오케스트레이터 화면과 API
+    if (req.method === 'GET' && path === '/distribution') {
+      const html = readFileSync(join(UI, 'distribution.html'));
+      res.writeHead(200, { 'Content-Type': MIME['.html'], 'Cache-Control': 'no-store' });
+      return res.end(html);
+    }
+    if (await handleDist(req, res, path, { json, readBody })) return;
+
     const asset = path.match(/^\/assets\/([A-Za-z0-9._-]+)$/);
     if (req.method === 'GET' && asset) {
       const file = join(UI, asset[1]);
@@ -297,6 +306,7 @@ server.listen(PORT, HOST, () => {
   console.log('새김AI Atelier 만들기 콘솔');
   console.log(`  주소     http://${HOST}:${PORT}`);
   console.log(`  ComfyUI  ${process.env.ATELIER_COMFY ?? 'http://127.0.0.1:8188'}`);
+  console.log(`  배포     http://${HOST}:${PORT}/distribution`);
   console.log('  이 포트는 공개 갤러리 API(8787)와 분리되어 있습니다.');
   console.log('  종료는 Ctrl+C');
 });
