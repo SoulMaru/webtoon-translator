@@ -43,7 +43,7 @@ ignat.ns.cloudflare.com
 rihana.ns.cloudflare.com
 ```
 
-요금제는 **Free (US$0)**. 계정 `[비공개 이메일]` 에는 등록된 결제 수단이 없습니다.
+요금제는 **Free (US$0)**. 계정 `Okmceo@gmail.com` 에는 등록된 결제 수단이 없습니다.
 
 ### Cloudflare가 가져간 기록
 
